@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    `maven-publish`
 }
 
 android {
@@ -29,16 +30,30 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "com.github.kevinfel-boop"
+                artifactId = "okhttp"
+                version = "1.0.0"
+            }
+        }
+    }
 }
 
 dependencies {
-    // Module core — notre config centrale
     implementation(project(":core"))
-
-    // OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
